@@ -1,6 +1,7 @@
 ﻿using AGVSystemCommonNet6.UserManagers;
 using AGVSytemCommonNet6.TASK;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace AGVSystemCommonNet6.DATABASE
 {
@@ -10,8 +11,11 @@ namespace AGVSystemCommonNet6.DATABASE
             : base(options)
         {
         }
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<UserEntity> Users { get; set; }
-        public DbSet<clsTaskState> Tasks { get; set; }
+        public DbSet<clsTaskDto> Tasks { get; set; }
     }
 }
