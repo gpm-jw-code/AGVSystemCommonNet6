@@ -10,7 +10,7 @@ namespace AGVSytemCommonNet6.MAP
 {
     public class PathFinder
     {
-
+        public static event EventHandler<Exception> OnExceptionHappen;
         public class PathFinderOption
         {
             public bool OnlyNormalPoint { get; set; } = false;
@@ -70,69 +70,83 @@ namespace AGVSytemCommonNet6.MAP
         }
         public clsPathInfo FindShortestPath(Dictionary<int, MapStation> stations, int startPtIndex, int endPtIndex, PathFinderOption options = null)
         {
-            //Tag 73->9
-            List<KeyValuePair<int, MapStation>> staions_ordered = new List<KeyValuePair<int, MapStation>>();
-
-            if (options != null)
+            try
             {
-                if (options.OnlyNormalPoint)
+
+                //Tag 73->9
+                List<KeyValuePair<int, MapStation>> staions_ordered = new List<KeyValuePair<int, MapStation>>();
+
+                if (options != null)
                 {
-                    List<KeyValuePair<int, MapStation>> normal_pts = stations.ToList().FindAll(kp => kp.Value.StationType == 0);
-                    staions_ordered = normal_pts.OrderBy(k => k.Key).ToList();
+                    if (options.OnlyNormalPoint)
+                    {
+                        List<KeyValuePair<int, MapStation>> normal_pts = stations.ToList().FindAll(kp => kp.Value.StationType == 0);
+                        staions_ordered = normal_pts.OrderBy(k => k.Key).ToList();
+                    }
+                    else
+                    {
+                        List<KeyValuePair<int, MapStation>> normal_pts = stations.ToList();
+                        staions_ordered = normal_pts.OrderBy(k => k.Key).ToList();
+                    }
+
+                    if (options.AvoidTagNumbers.Count != 0)
+                    {
+
+                        staions_ordered = staions_ordered.FindAll(s => !options.AvoidTagNumbers.Contains(s.Value.TagNumber));
+                    }
+
                 }
                 else
                 {
+
                     List<KeyValuePair<int, MapStation>> normal_pts = stations.ToList();
                     staions_ordered = normal_pts.OrderBy(k => k.Key).ToList();
                 }
 
-                if (options.AvoidTagNumbers.Count != 0)
-                {
 
-                    staions_ordered = staions_ordered.FindAll(s => !options.AvoidTagNumbers.Contains(s.Value.TagNumber));
+                int[,] graph = CreateDistanceMatrix(staions_ordered);
+
+                int startIndex = staions_ordered.FindIndex(v => v.Key == startPtIndex);
+                int finalIndex = staions_ordered.FindIndex(v => v.Key == endPtIndex);
+
+                if (startIndex == -1 | finalIndex == -1)
+                {
+                    return new clsPathInfo();
                 }
 
+                var _startStation = staions_ordered[startIndex].Value;
+                var _endStation = staions_ordered[finalIndex].Value;
+
+                var source = startIndex;
+                DijkstraAlgorithm(graph, source, out int[] distance, out int[] parent);
+                Console.WriteLine("From Tag\tTo Tag\tDistance from Source\tPath(Tag)");
+                Console.Write($"{_startStation.TagNumber}\t{_endStation.TagNumber}\t{distance[finalIndex]}\t");
+
+                var dist = distance[finalIndex];
+                clsPathInfo pathinfo = new clsPathInfo();
+
+                int node = finalIndex;
+                while (node != source)
+                {
+                    if (node == -1)
+                        return new clsPathInfo
+                        {
+
+                        };
+                    pathinfo.stations.Insert(0, staions_ordered[node].Value);
+
+                    node = parent[node];
+                }
+                pathinfo.stations.Insert(0, staions_ordered[source].Value);
+                Console.WriteLine(string.Join(" -> ", pathinfo.tags));
+
+                return pathinfo;
             }
-            else
+            catch (Exception ex)
             {
-
-                List<KeyValuePair<int, MapStation>> normal_pts = stations.ToList();
-                staions_ordered = normal_pts.OrderBy(k => k.Key).ToList();
+                OnExceptionHappen?.Invoke(this, ex);
+                throw ex;
             }
-
-
-            int[,] graph = CreateDistanceMatrix(staions_ordered);
-
-            int startIndex = staions_ordered.FindIndex(v => v.Key == startPtIndex);
-            int finalIndex = staions_ordered.FindIndex(v => v.Key == endPtIndex);
-
-            var _startStation = staions_ordered[startIndex].Value;
-            var _endStation = staions_ordered[finalIndex].Value;
-
-            var source = startIndex;
-            DijkstraAlgorithm(graph, source, out int[] distance, out int[] parent);
-            Console.WriteLine("From Tag\tTo Tag\tDistance from Source\tPath(Tag)");
-            Console.Write($"{_startStation.TagNumber}\t{_endStation.TagNumber}\t{distance[finalIndex]}\t");
-
-            var dist = distance[finalIndex];
-            clsPathInfo pathinfo = new clsPathInfo();
-
-            int node = finalIndex;
-            while (node != source)
-            {
-                if (node == -1)
-                    return new clsPathInfo
-                    {
-
-                    };
-                pathinfo.stations.Insert(0, staions_ordered[node].Value);
-
-                node = parent[node];
-            }
-            pathinfo.stations.Insert(0, staions_ordered[source].Value);
-            Console.WriteLine(string.Join(" -> ", pathinfo.tags));
-
-            return pathinfo;
         }
 
         public clsMapPoint[] GetTrajectory(string MapName, List<MapStation> stations)

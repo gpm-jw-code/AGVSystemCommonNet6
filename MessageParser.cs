@@ -81,6 +81,10 @@ namespace AGVSytemCommonNet6
         }
         public static clsAGVSMessage[] MsgParse(string raw_msg)
         {
+            if (raw_msg.Contains("0301"))
+            {
+
+            }
             string[] splited = raw_msg.Replace("\n", "").Replace("*\r", "&").Split('&');
             string[] msgs = splited.ToList().FindAll(str => str != "").ToArray();
             int msgNums = msgs.Length;

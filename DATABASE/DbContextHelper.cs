@@ -4,7 +4,7 @@ using AGVSytemCommonNet6.TASK;
 
 namespace AGVSystemCommonNet6.DATABASE
 {
-    internal class DbContextHelper : IDisposable
+    public class DbContextHelper : IDisposable
     {
         private readonly string _connectionString;
         internal AGVSDbContext _context;
@@ -21,11 +21,6 @@ namespace AGVSystemCommonNet6.DATABASE
             var optionsBuilder = new DbContextOptionsBuilder<AGVSDbContext>();
             optionsBuilder.UseSqlite(_connectionString);
             _context = new AGVSDbContext(optionsBuilder.Options);
-        }
-
-        public Repository<T> CreateRepository<T>(AGVSDbContext dbContext) where T : class
-        {
-            return new Repository<T>(dbContext);
         }
 
         protected virtual void Dispose(bool disposing)

@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace AGVSystemCommonNet6.DATABASE
 {
-    public class TaskDatabaseHelper
+    public class TaskDatabaseHelper:IDisposable
     {
-        private readonly string connection_str;
-        private DbContextHelper dbhelper;
-        public TaskDatabaseHelper(string connection_str = "Data Source=D://param//Database//AGVSWebSystem.db")
+        protected readonly string connection_str;
+        protected  DbContextHelper dbhelper;
+        private bool disposedValue;
+        public TaskDatabaseHelper()
         {
-            this.connection_str = connection_str;
+            this.connection_str = Configs.DBConnection;
             dbhelper = new DbContextHelper(connection_str);
         }
 
@@ -30,7 +31,12 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State != TASK_RUN_STATE.FINISH).OrderByDescending(t => t.RecieveTime).ToList();
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATE.WAIT| tsk.State == TASK_RUN_STATE.RUNNING).OrderByDescending(t => t.RecieveTime).ToList();
+                if(incompleteds.Count > 0)
+                {
+
+
+                }
                 return incompleteds;
             }
         }
@@ -39,12 +45,17 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State != TASK_RUN_STATE.WAIT).OrderByDescending(t => t.RecieveTime).ToList();
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATE.FINISH| tsk.State == TASK_RUN_STATE.FAILURE).OrderByDescending(t => t.RecieveTime).ToList();
                 return incompleteds;
             }
         }
 
-        public int AddTask(clsTaskDto taskState)
+        /// <summary>
+        /// 新增一筆任務資料
+        /// </summary>
+        /// <param name="taskState"></param>
+        /// <returns></returns>
+        virtual public int Add(clsTaskDto taskState)
         {
             try
             {
@@ -62,7 +73,7 @@ namespace AGVSystemCommonNet6.DATABASE
             }
         }
 
-        public bool ModifyTaskState(clsTaskDto executingTask, TASK_RUN_STATE state)
+        public bool ModifyState(clsTaskDto executingTask, TASK_RUN_STATE state)
         {
             try
             {
@@ -128,6 +139,35 @@ namespace AGVSystemCommonNet6.DATABASE
                 return false;
             }
 
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 處置受控狀態 (受控物件)
+                }
+
+                // TODO: 釋出非受控資源 (非受控物件) 並覆寫完成項
+                // TODO: 將大型欄位設為 Null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: 僅有當 'Dispose(bool disposing)' 具有會釋出非受控資源的程式碼時，才覆寫完成項
+        // ~TaskDatabaseHelper()
+        // {
+        //     // 請勿變更此程式碼。請將清除程式碼放入 'Dispose(bool disposing)' 方法
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // 請勿變更此程式碼。請將清除程式碼放入 'Dispose(bool disposing)' 方法
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

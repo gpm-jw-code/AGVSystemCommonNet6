@@ -25,7 +25,8 @@ namespace AGVSytemCommonNet6
             IDLE = 1,
             RUN,
             DOWN,
-            Charging
+            Charging,
+            Unknown
         }
 
         public enum STATION_TYPE

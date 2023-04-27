@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace AGVSytemCommonNet6.MAP
         public string Note { get; set; }
         public int PointIndex { get; set; }
         public Dictionary<int, MapStation> Points { get; set; }
+        [JsonProperty( DefaultValueHandling = DefaultValueHandling.Ignore )]
         public Dictionary<string, Bay> Bays { get; set; }
     }
 }

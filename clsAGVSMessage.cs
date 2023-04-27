@@ -216,6 +216,11 @@ namespace AGVSytemCommonNet6.AGVMessage
         {
             return Enum.GetValues(typeof(ACTION_TYPE)).Cast<ACTION_TYPE>().ToList().FirstOrDefault(a => a.ToString() == taskData.Action_Type);
         }
+
+        public static STATION_TYPE GetStationType(this int station_type_code)
+        {
+            return Enum.GetValues(typeof(STATION_TYPE)).Cast<STATION_TYPE>().ToList().FirstOrDefault(a => (int)a == station_type_code);
+        }
     }
 
 }

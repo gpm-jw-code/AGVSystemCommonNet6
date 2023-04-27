@@ -1,7 +1,9 @@
 ﻿using AGVSytemCommonNet6.TASK;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace AGVSytemCommonNet6.HttpHelper
@@ -23,7 +25,9 @@ namespace AGVSytemCommonNet6.HttpHelper
             {
                 using (HttpClient client = new HttpClient())
                 {
+                    Stopwatch sw = Stopwatch.StartNew();
                     var response = await client.PostAsync(url, content);
+                    Console.WriteLine($"Post Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -46,20 +50,30 @@ namespace AGVSytemCommonNet6.HttpHelper
         }
         public static async Task<Tin> GetAsync<Tin>(string url)
         {
-            string jsonContent = "";
-            HttpResponseMessage response = null;
-            using (HttpClient client = new HttpClient())
+            try
             {
-                response = await client.GetAsync(url);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                string jsonContent = "";
+                HttpResponseMessage response = null;
+                using (HttpClient client = new HttpClient())
                 {
-                    jsonContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<Tin>(jsonContent);
-                    return result;
+                    response = await client.GetAsync(url);
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        Stopwatch sw = Stopwatch.StartNew();
+                        jsonContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine($" Get Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
+                        var result = JsonConvert.DeserializeObject<Tin>(jsonContent);
+                        return result;
+                    }
+                    else
+                        throw new HttpRequestException($"Failed to GET to {url}({response.StatusCode})");
                 }
-                else
-                    throw new HttpRequestException($"Failed to GET to {url}({response.StatusCode})");
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
 
         }
         public static async Task<(HttpResponseMessage response, string content)> Get(string host, string request_url)
@@ -75,7 +89,9 @@ namespace AGVSytemCommonNet6.HttpHelper
                 response = await client.GetAsync(request_url);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    Stopwatch sw = Stopwatch.StartNew();
                     jsonContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($" Get Request({string.Format("{0}/{1}", host, request_url)}) | Spend:{sw.ElapsedMilliseconds}ms");
                 }
                 return (response, jsonContent);
             });
