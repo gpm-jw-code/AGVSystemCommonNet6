@@ -27,7 +27,8 @@ namespace AGVSytemCommonNet6.HttpHelper
                 {
                     Stopwatch sw = Stopwatch.StartNew();
                     var response = await client.PostAsync(url, content);
-                    Console.WriteLine($"Post Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
+                    if (sw.ElapsedMilliseconds > 3000)
+                        Console.WriteLine($"[HTTP Long Time Notify] Post Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -61,7 +62,8 @@ namespace AGVSytemCommonNet6.HttpHelper
                     {
                         Stopwatch sw = Stopwatch.StartNew();
                         jsonContent = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine($" Get Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
+                        if (sw.ElapsedMilliseconds > 3000)
+                            Console.WriteLine($"[HTTP Long Time Notify] Get Request({url}) | Spend:{sw.ElapsedMilliseconds}ms");
                         var result = JsonConvert.DeserializeObject<Tin>(jsonContent);
                         return result;
                     }
@@ -91,7 +93,8 @@ namespace AGVSytemCommonNet6.HttpHelper
                 {
                     Stopwatch sw = Stopwatch.StartNew();
                     jsonContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($" Get Request({string.Format("{0}/{1}", host, request_url)}) | Spend:{sw.ElapsedMilliseconds}ms");
+                    if (sw.ElapsedMilliseconds > 3000)
+                        Console.WriteLine($"[HTTP Long Time Notify]Get Request({string.Format("{0}/{1}", host, request_url)}) | Spend:{sw.ElapsedMilliseconds}ms");
                 }
                 return (response, jsonContent);
             });

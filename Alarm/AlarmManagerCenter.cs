@@ -135,9 +135,18 @@ namespace AGVSystemCommonNet6.Alarm
 
         public static clsAlarmCode GetAlarmCode(ALARMS alarm_enum)
         {
-            if (!Initialized)
-                Initialize();
-            return AlarmCodes[alarm_enum];
+            try
+            {
+
+                if (!Initialized)
+                    Initialize();
+                return AlarmCodes[alarm_enum];
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public static void ResetAlarm(clsAlarmDto alarm, bool resetAllSameCode = false)
