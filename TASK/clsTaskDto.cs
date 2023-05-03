@@ -1,11 +1,11 @@
-﻿using AGVSytemCommonNet6.AGVMessage;
+﻿using AGVSystemCommonNet6.AGVMessage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace AGVSytemCommonNet6.TASK
+namespace AGVSystemCommonNet6.TASK
 {
     public enum ACTIONS
     {

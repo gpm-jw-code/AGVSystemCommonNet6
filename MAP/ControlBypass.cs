@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AGVSytemCommonNet6.MAP
+namespace AGVSystemCommonNet6.MAP
 {
     public class ControlBypass
     {

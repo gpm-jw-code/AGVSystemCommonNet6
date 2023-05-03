@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using AGVSystemCommonNet6.Alarm;
-using AGVSytemCommonNet6.HttpHelper;
+using AGVSystemCommonNet6.HttpHelper;
 
 namespace AGVSystemCommonNet6.Microservices
 {

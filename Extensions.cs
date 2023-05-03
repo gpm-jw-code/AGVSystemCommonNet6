@@ -1,12 +1,12 @@
-﻿using AGVSytemCommonNet6.AGVMessage;
-using AGVSytemCommonNet6.MAP;
+﻿using AGVSystemCommonNet6.AGVMessage;
+using AGVSystemCommonNet6.MAP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static AGVSytemCommonNet6.clsEnums;
+using static AGVSystemCommonNet6.clsEnums;
 
-namespace AGVSytemCommonNet6
+namespace AGVSystemCommonNet6
 {
     public static class Extensions
     {

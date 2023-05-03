@@ -1,4 +1,4 @@
-﻿using AGVSytemCommonNet6.AGVMessage;
+﻿using AGVSystemCommonNet6.AGVMessage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace AGVSytemCommonNet6
+namespace AGVSystemCommonNet6
 {
     public class MessageParser
     {

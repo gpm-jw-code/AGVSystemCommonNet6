@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static AGVSytemCommonNet6.clsEnums;
+using static AGVSystemCommonNet6.clsEnums;
 
 namespace AGVSystemCommonNet6.Availability
 {

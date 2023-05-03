@@ -1,5 +1,5 @@
 ﻿using AGVSystemCommonNet6.DATABASE;
-using AGVSytemCommonNet6;
+using AGVSystemCommonNet6;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static AGVSytemCommonNet6.clsEnums;
+using static AGVSystemCommonNet6.clsEnums;
 
 namespace AGVSystemCommonNet6.Availability
 {

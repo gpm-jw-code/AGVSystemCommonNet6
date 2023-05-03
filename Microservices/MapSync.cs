@@ -1,4 +1,4 @@
-﻿using AGVSytemCommonNet6.HttpHelper;
+﻿using AGVSystemCommonNet6.HttpHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;

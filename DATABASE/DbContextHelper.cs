@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AGVSystemCommonNet6.UserManagers;
-using AGVSytemCommonNet6.TASK;
+using AGVSystemCommonNet6.TASK;
 
 namespace AGVSystemCommonNet6.DATABASE
 {

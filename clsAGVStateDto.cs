@@ -1,5 +1,5 @@
-﻿using AGVSytemCommonNet6;
-using AGVSytemCommonNet6.TASK;
+﻿using AGVSystemCommonNet6;
+using AGVSystemCommonNet6.TASK;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

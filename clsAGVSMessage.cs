@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
-using static AGVSytemCommonNet6.clsEnums;
+using static AGVSystemCommonNet6.clsEnums;
 
-namespace AGVSytemCommonNet6.AGVMessage
+namespace AGVSystemCommonNet6.AGVMessage
 {
     public enum ACTION_TYPE
     {
