@@ -21,7 +21,7 @@ namespace AGVSytemCommonNet6.MAP
         public string? InvolvePoint { get; set; }
         public int StationType { get; set; }
         public int LsrMode { get; set; }
-        public int Speed { get; set; }
+        public double Speed { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? Bay { get; set; }

@@ -182,7 +182,7 @@ namespace AGVSytemCommonNet6.AGVMessage
         public double Y { get; set; }
         public double Theta { get; set; }
         public int Laser { get; set; }
-        public int Speed { get; set; }
+        public double Speed { get; set; }
         public string Map_Name { get; set; } = "";
         public clsAutoDoor Auto_Door { get; set; } = new clsAutoDoor();
         public clsControlMode Control_Mode { get; set; } = new clsControlMode();
