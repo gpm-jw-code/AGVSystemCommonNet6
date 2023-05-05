@@ -9,7 +9,8 @@ namespace AGVSystemCommonNet6.AGVMessage
 {
     public enum ACTION_TYPE
     {
-        Move, Unload, Load, Charge, Discharge, Escape
+        Move, Unload, Load, Charge, Discharge, Escape,
+        Park
     }
 
     public class clsAGVSMessage

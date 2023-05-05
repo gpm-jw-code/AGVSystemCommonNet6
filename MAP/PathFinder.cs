@@ -154,27 +154,36 @@ namespace AGVSystemCommonNet6.MAP
             List<clsMapPoint> trajectoryPoints = new List<clsMapPoint>();
             for (int i = 0; i < stations.Count; i++)
             {
-                trajectoryPoints.Add(new clsMapPoint()
+                try
                 {
-                    index = i,
-                    X = stations[i].X,
-                    Y = stations[i].Y,
-                    Auto_Door = new clsAutoDoor
+                    trajectoryPoints.Add(new clsMapPoint()
                     {
-                        Key_Name = stations[i].AutoDoor.KeyName,
-                        Key_Password = stations[i].AutoDoor.KeyPassword,
-                    },
-                    Control_Mode = new clsControlMode
-                    {
-                        Dodge = int.Parse(stations[i].DodgeMode),
-                        Spin = int.Parse(stations[i].SpinMode),
-                    },
-                    Laser = stations[i].LsrMode,
-                    Map_Name = MapName,
-                    Point_ID = stations[i].TagNumber,
-                    Speed = stations[i].Speed,
-                    Theta = stations[i].Direction,
-                });
+                        index = i,
+                        X = stations[i].X,
+                        Y = stations[i].Y,
+                        Auto_Door = new clsAutoDoor
+                        {
+                            Key_Name = stations[i].AutoDoor.KeyName,
+                            Key_Password = stations[i].AutoDoor.KeyPassword,
+                        },
+                        Control_Mode = new clsControlMode
+                        {
+                            Dodge = int.Parse(stations[i].DodgeMode == null ? "0" : stations[i].DodgeMode),
+                            Spin = int.Parse(stations[i].SpinMode == null ? "0" : stations[i].SpinMode),
+                        },
+                        Laser = stations[i].LsrMode,
+                        Map_Name = MapName,
+                        Point_ID = stations[i].TagNumber,
+                        Speed = stations[i].Speed,
+                        Theta = stations[i].Direction,
+                    });
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
             }
             return trajectoryPoints.ToArray();
         }

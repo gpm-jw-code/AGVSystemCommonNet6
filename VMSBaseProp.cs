@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AGVSytemCommonNet6
+namespace AGVSystemCommonNet6
 {
     public class VMSBaseProp
     {
