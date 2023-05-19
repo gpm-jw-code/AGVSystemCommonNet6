@@ -16,7 +16,6 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Messages
         public double yValue { get; set; }
         public double theta { get; set; }
 
-        public int Theta_Int => (int)theta;
 
         public BarcodeReaderState()
         {
