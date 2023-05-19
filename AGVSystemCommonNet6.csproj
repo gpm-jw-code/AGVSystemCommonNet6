@@ -10,10 +10,16 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NModbus4.Core" Version="1.0.2" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Navigator\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RosBridgeClient\RosBridgeClient.csproj" />
   </ItemGroup>
 
 </Project>

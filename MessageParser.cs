@@ -1,4 +1,5 @@
-﻿using AGVSystemCommonNet6.AGVMessage;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using AGVSystemCommonNet6.AGVMessage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

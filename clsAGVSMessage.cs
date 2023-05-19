@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -7,12 +8,6 @@ using static AGVSystemCommonNet6.clsEnums;
 
 namespace AGVSystemCommonNet6.AGVMessage
 {
-    public enum ACTION_TYPE
-    {
-        Move, Unload, Load, Charge, Discharge, Escape,
-        Park
-    }
-
     public class clsAGVSMessage
     {
         public string SID { get; set; }
@@ -169,43 +164,7 @@ namespace AGVSystemCommonNet6.AGVMessage
     /// "Control Bypass": {"Ground Hole CCD": false,"Ground Hole Sensor": false,"Ultrasonic Sensor": false},
     /// "UltrasonicDistance": 0}
     /// </summary>
-    public class clsMapPoint
-    {
-        public clsMapPoint() { }
-        public clsMapPoint(int index)
-        {
-            this.index = index;
-        }
-        [NonSerialized]
-        public int index;
-        public int Point_ID { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Theta { get; set; }
-        public int Laser { get; set; }
-        public double Speed { get; set; }
-        public string Map_Name { get; set; } = "";
-        public clsAutoDoor Auto_Door { get; set; } = new clsAutoDoor();
-        public clsControlMode Control_Mode { get; set; } = new clsControlMode();
-        public double UltrasonicDistance { get; set; } = 0;
-    }
-    public class clsAutoDoor
-    {
-        public string Key_Name { get; set; }
-        public string Key_Password { get; set; }
-    }
-    public class clsControlMode
-    {
-        public int Dodge { get; set; }
-        public int Spin { get; set; }
-    }
-
-    public class clsCST
-    {
-        public string CST_ID { get; set; }
-        public int CST_Type { get; set; }
-    }
-
+    
     public static class Extension
     {
         /// <summary>

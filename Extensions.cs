@@ -1,5 +1,9 @@
-﻿using AGVSystemCommonNet6.AGVMessage;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using AGVSystemCommonNet6.AGVMessage;
 using AGVSystemCommonNet6.MAP;
+using Newtonsoft.Json;
+using RosSharp.RosBridgeClient.MessageTypes.Geometry;
+using RosSharp.RosBridgeClient.MessageTypes.Std;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +14,58 @@ namespace AGVSystemCommonNet6
 {
     public static class Extensions
     {
+        public static Time ToStdTime(this DateTime _time)
+        {
+            return new Time()
+            {
+                secs = (uint)(_time.Subtract(new DateTime(1970, 1, 1)).TotalSeconds),
+                nsecs = (uint)(_time.Millisecond * 1000000),
+            };
+        }
+
+        public static string ToAGVSTimeFormat(this DateTime _time)
+        {
+            return _time.ToString("yyyyMMdd HH:mm:ss");
+        }
+
+        /// <summary>
+        /// 將角度值轉換為 Quaternion(四位元)
+        /// </summary>
+        /// <param name="Theta"></param>
+        /// <returns></returns>
+        public static Quaternion ToQuaternion(this double Theta)
+        {
+            double yaw_radians = (float)Theta * Math.PI / 180.0;
+            double cos_yaw = Math.Cos(yaw_radians / 2.0);
+            double sin_yaw = Math.Sin(yaw_radians / 2.0);
+            return new Quaternion(0.0f, 0.0f, (float)sin_yaw, (float)cos_yaw);
+        }
+
+        public static double ToTheta(this RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion orientation)
+        {
+            double yaw;
+            double x = orientation.x;
+            double y = orientation.y;
+            double z = orientation.z;
+            double w = orientation.w;
+            // 計算角度
+            double siny_cosp = 2.0 * (w * z + x * y);
+            double cosy_cosp = 1.0 - 2.0 * (y * y + z * z);
+            yaw = Math.Atan2(siny_cosp, cosy_cosp);
+            return yaw * 180.0 / Math.PI;
+        }
+        public static string ToJson(this object obj)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(obj, Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return "{}";
+            }
+        }
         public static MAIN_STATUS GetAGVStatus(this cls_0105_RunningStatusReportHeader data)
         {
             return Enum.GetValues(typeof(MAIN_STATUS)).Cast<MAIN_STATUS>().First(enu => (int)enu == data.AGV_Status);
@@ -28,7 +84,7 @@ namespace AGVSystemCommonNet6
         /// <returns></returns>
         public static clsMapPoint[] GetMainTrajectory(this cls_0301_TaskDownloadHeader task)
         {
-            if (task.GetActionTypeEnum() == ACTION_TYPE.Move)
+            if (task.GetActionTypeEnum() == ACTION_TYPE.None)
                 return task.Trajectory;
             else
                 return task.Homing_Trajectory;
@@ -41,7 +97,7 @@ namespace AGVSystemCommonNet6
         /// <returns></returns>
         public static void ReplanTrajectort(this cls_0301_TaskDownloadHeader task, clsMapPoint[] newTrajectory)
         {
-            if (task.GetActionTypeEnum() == ACTION_TYPE.Move)
+            if (task.GetActionTypeEnum() == ACTION_TYPE.None)
                 task.Trajectory = newTrajectory;
             else
                 task.Homing_Trajectory = newTrajectory;
