@@ -41,6 +41,18 @@ namespace AGVSystemCommonNet6
             return new Quaternion(0.0f, 0.0f, (float)sin_yaw, (float)cos_yaw);
         }
 
+        public static int[] GetRemainPath(this IEnumerable<clsMapPoint> points, int startTag)
+        {
+            if (points.Count() == 0)
+                return new int[1] { startTag };
+            
+            int find_index(int tag)
+            {
+                return points.ToList().FindIndex(p => p.Point_ID == tag);
+            }
+            var startTag_index = find_index(startTag);
+            return points.ToList().FindAll(p => find_index(p.Point_ID) >= startTag_index).Select(pt => pt.Point_ID).ToArray();
+        }
         public static double ToTheta(this RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion orientation)
         {
             double yaw;

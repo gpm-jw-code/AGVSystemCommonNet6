@@ -10,7 +10,7 @@
 using AGVSystemCommonNet6.GPMRosMessageNet.Actions;
 using RosSharp.RosBridgeClient.Actionlib;
 
-namespace AGVSystemCommonNet6.AGVSystemCommonNet6.GPMRosMessageNet.Actions
+namespace AGVSystemCommonNet6.GPMRosMessageNet.Actions
 {
     public class TaskCommandAction : RosSharp.RosBridgeClient.Action<TaskCommandActionGoal, TaskCommandActionResult, TaskCommandActionFeedback, TaskCommandGoal, TaskCommandResult, TaskCommandFeedback>
     {

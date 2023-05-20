@@ -3,7 +3,7 @@ using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.Actionlib;
 using RosSharp.RosBridgeClient.MessageTypes.Actionlib;
 
-namespace AGVSystemCommonNet6.AGVSystemCommonNet6.GPMRosMessageNet.Actions
+namespace AGVSystemCommonNet6.GPMRosMessageNet.Actions
 {
     public class TaskCommandActionClient : ActionClient<TaskCommandAction, TaskCommandActionGoal, TaskCommandActionResult, TaskCommandActionFeedback, TaskCommandGoal, TaskCommandResult, TaskCommandFeedback>, IDisposable
     {
