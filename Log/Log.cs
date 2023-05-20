@@ -89,7 +89,7 @@ namespace AGVSystemCommonNet6.Log
 
             while (true)
             {
-                await Task.Delay(100);
+                await Task.Delay(1);
 
                 if (logItemQueue.TryDequeue(out var logItem))
                 {
