@@ -11,7 +11,7 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Actions
 {
     public class TaskCommandActionServer : ActionServer<TaskCommandAction, TaskCommandActionGoal, TaskCommandActionResult, TaskCommandActionFeedback, TaskCommandGoal, TaskCommandResult, TaskCommandFeedback>
     {
-        public Action<TaskCommandGoal> OnNAVGoalReceived;
+        public event EventHandler<TaskCommandGoal> OnNAVGoalReceived;
         public TaskCommandActionServer(string actionName, RosSocket rosSocket)
         {
             this.actionName = actionName;
@@ -45,7 +45,7 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Actions
                     SetSucceeded();
                 }
                 else
-                    OnNAVGoalReceived(goal);
+                    OnNAVGoalReceived(this, goal);
             }
 
         }

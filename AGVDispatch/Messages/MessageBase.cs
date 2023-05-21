@@ -15,9 +15,9 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
 
     public enum RETURN_CODE : int
     {
-        OK = 0, 
+        OK = 0,
         NG = 1,
-        System_Error = 404, 
+        System_Error = 404,
         Connection_Fail = 405,
         No_Response = 406
     }
@@ -42,6 +42,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         Measure,
         Load,
         Charge,
+        Carry,
         Discharge,
         Escape,
         Park,

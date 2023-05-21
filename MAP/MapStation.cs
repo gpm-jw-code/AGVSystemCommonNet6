@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace AGVSystemCommonNet6.MAP
         public bool IsStandbyPoint { get; set; }
         public bool IsSegment { get; set; }
         public string? InvolvePoint { get; set; }
-        public int StationType { get; set; }
+        public STATION_TYPE StationType { get; set; }
         public int LsrMode { get; set; }
         public double Speed { get; set; }
 
@@ -27,6 +28,9 @@ namespace AGVSystemCommonNet6.MAP
         public string? Bay { get; set; }
         public bool IsOverlap { get; set; }
         public Graph Graph { get; set; }
+        /// <summary>
+        /// Key Point Index, value:權重
+        /// </summary>
         public Dictionary<string, int>? Target { get; set; }
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? DodgeMode { get; set; }

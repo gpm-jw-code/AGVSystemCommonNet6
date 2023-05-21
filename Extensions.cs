@@ -45,7 +45,7 @@ namespace AGVSystemCommonNet6
         {
             if (points.Count() == 0)
                 return new int[1] { startTag };
-            
+
             int find_index(int tag)
             {
                 return points.ToList().FindIndex(p => p.Point_ID == tag);
@@ -115,17 +115,6 @@ namespace AGVSystemCommonNet6
                 task.Homing_Trajectory = newTrajectory;
         }
 
-        /// <summary>
-        /// 取得站點類型
-        /// </summary>
-        /// <param name="map_station"></param>
-        /// <returns></returns>
-        public static STATION_TYPE GetStationTypeEnum(this MapStation? map_station)
-        {
-            if (map_station == null)
-                return STATION_TYPE.Unknown;
-            return Enum.GetValues(typeof(STATION_TYPE)).Cast<STATION_TYPE>().First(st => (int)st == map_station.StationType);
-        }
 
 
         /// <summary>
@@ -135,7 +124,7 @@ namespace AGVSystemCommonNet6
         /// <returns></returns>
         public static bool IsChargeAble(this MapStation map_station)
         {
-            STATION_TYPE station_type = map_station.GetStationTypeEnum();
+            STATION_TYPE station_type = map_station.StationType;
             return station_type == STATION_TYPE.Charge | station_type == STATION_TYPE.Charge_Buffer | station_type == STATION_TYPE.Charge_STK;
         }
 
@@ -146,7 +135,7 @@ namespace AGVSystemCommonNet6
         /// <returns></returns>
         public static bool IsLoadAble(this MapStation map_station)
         {
-            STATION_TYPE station_type = map_station.GetStationTypeEnum();
+            STATION_TYPE station_type = map_station.StationType;
             return station_type == STATION_TYPE.EQ | station_type == STATION_TYPE.EQ_LD
                     | station_type == STATION_TYPE.STK | station_type == STATION_TYPE.STK_LD
                     | station_type == STATION_TYPE.Charge_STK;
@@ -158,7 +147,7 @@ namespace AGVSystemCommonNet6
         /// <returns></returns>
         public static bool IsUnloadAble(this MapStation map_station)
         {
-            STATION_TYPE station_type = map_station.GetStationTypeEnum();
+            STATION_TYPE station_type = map_station.StationType;
             return station_type == STATION_TYPE.EQ | station_type == STATION_TYPE.EQ_ULD
                     | station_type == STATION_TYPE.STK | station_type == STATION_TYPE.STK_ULD
                     | station_type == STATION_TYPE.Charge_STK;
