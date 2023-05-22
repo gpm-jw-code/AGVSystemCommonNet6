@@ -160,6 +160,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
     }
     public class clsTaskDownloadAckData
     {
+       
         [JsonProperty("Return Code")]
         public int ReturnCode { get; set; }
     }

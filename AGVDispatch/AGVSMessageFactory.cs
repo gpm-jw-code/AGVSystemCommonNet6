@@ -8,7 +8,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
         public static string SID { get; set; } = "001:001:001";
         public static string EQName { get; set; } = "AGV_1";
 
-        public delegate RunningStatus GetVCSRunningDataDelegate();
+        public delegate RunningStatus GetVCSRunningDataDelegate(bool getPoseWithLastPtOfTrajectory = false);
         public static GetVCSRunningDataDelegate OnVCSRunningDataRequest;
 
         private static int SystemByteStored = 0;
@@ -119,9 +119,9 @@ namespace AGVSystemCommonNet6.AGVDispatch
             return Encoding.ASCII.GetBytes(FormatSendOutString(mesg.ToJson()));
         }
 
-        internal static byte[] CreateRunningStateReportQueryData(out clsRunningStatusReportMessage msg)
+        internal static byte[] CreateRunningStateReportQueryData(out clsRunningStatusReportMessage msg, bool getPoseOfLastPtOfTrajectory = false)
         {
-            RunningStatus? runningData = OnVCSRunningDataRequest?.Invoke();
+            RunningStatus? runningData = OnVCSRunningDataRequest?.Invoke(getPoseOfLastPtOfTrajectory);
             msg = new clsRunningStatusReportMessage();
             msg.SID = SID;
             msg.EQName = EQName;

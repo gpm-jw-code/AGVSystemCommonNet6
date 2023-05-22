@@ -24,7 +24,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
         public onlineModeChangeDelelage OnRemoteModeChanged;
         public taskResetReqDelegate OnTaskResetReq;
         private clsRunningStatusReportMessage lastRunningStatusDataReport = new clsRunningStatusReportMessage();
-
+        private ManualResetEvent RunningStatusRptPause = new ManualResetEvent(true);
         public enum MESSAGE_TYPE
         {
             REQ_0101 = 0101,
@@ -94,7 +94,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
             {
                 while (true)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(1000);
                     if (!IsConnected())
                     {
                         Connect();
@@ -110,18 +110,32 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     {
                         // LOG.TRACE($" OnlineMode Query Done=>Remote Mode : {result.onlineModeQuAck.RemoteMode}");
                     }
-                    (bool, SimpleRequestResponseWithTimeStamp runningStateReportAck) runningStateReport_result = TryRnningStateReportAsync().Result;
-                    if (!runningStateReport_result.Item1)
-                        LOG.Critical("[AGVS] Running State Report Fail...AGVS No Response");
-                    else
+                    Task.Factory.StartNew(() =>
                     {
-                        // LOG.TRACE($" RunningState Report Done=> ReturnCode: {runningStateReport_result.runningStateReportAck.ReturnCode}");
-                    }
+                        RunningStatusRptPause.WaitOne();
+                        (bool, SimpleRequestResponseWithTimeStamp runningStateReportAck) runningStateReport_result = TryRnningStateReportAsync().Result;
+                        if (!runningStateReport_result.Item1)
+                            LOG.Critical("[AGVS] Running State Report Fail...AGVS No Response");
+                        else
+                        {
+                            // LOG.TRACE($" RunningState Report Done=> ReturnCode: {runningStateReport_result.runningStateReportAck.ReturnCode}");
+                        }
+                    });
 
                 }
             });
-            thread.IsBackground = true;
+            thread.IsBackground = false;
             thread.Start();
+        }
+
+        public void PauseRunningStatusReport()
+        {
+            RunningStatusRptPause.Reset();
+        }
+
+        public void ResumeRunningStatusReport()
+        {
+            RunningStatusRptPause.Set();
         }
         void ReceieveCallbaak(IAsyncResult ar)
         {
@@ -215,7 +229,6 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     MSG = taskDownloadReq;
                     AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
                     taskDownloadReq.TaskDownload.OriTaskDataJson = _json;
-                    LOG.WARN($"New Task Download! => {taskDownloadReq.TaskDownload.Task_Name}_{taskDownloadReq.TaskDownload.Task_Simplex}");
                     bool accept_task = OnTaskDownload(taskDownloadReq.TaskDownload);
                     if (TryTaskDownloadReqAckAsync(accept_task, taskDownloadReq.SystemBytes))
                     {
@@ -318,13 +331,25 @@ namespace AGVSystemCommonNet6.AGVDispatch
         {
             _ = Task.Run(async () =>
           {
+              PauseRunningStatusReport();
               await Task.Delay(100);
+
+              if (task_status == TASK_RUN_STATUS.ACTION_FINISH)
+              {
+                  await TryRnningStateReportWithActionFinishAtLastPtAsync();
+              }
+              else
+              {
+                  await TryRnningStateReportAsync();
+              }
+
               LOG.WARN($"Try Task Feedback to AGVS: Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}");
               byte[] data = AGVSMessageFactory.CreateTaskFeedbackMessageData(taskData, point_index, task_status, out clsTaskFeedbackMessage msg);
 
               //var lastState = lastRunningStatusDataReport.Header["0105"];
               //LOG.INFO($"Before TaskFeedBack :Status: = {lastState.ToJson()}");
               bool success = await WriteDataOut(data, msg.SystemBytes);
+              ResumeRunningStatusReport();
 
               if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase _retMsg))
               {
@@ -348,6 +373,29 @@ namespace AGVSystemCommonNet6.AGVDispatch
 
         }
 
+        private async Task<(bool, SimpleRequestResponseWithTimeStamp runningStateReportAck)> TryRnningStateReportWithActionFinishAtLastPtAsync()
+        {
+            try
+            {
+                byte[] data = AGVSMessageFactory.CreateRunningStateReportQueryData(out clsRunningStatusReportMessage msg, true);
+                await WriteDataOut(data, msg.SystemBytes);
+                lastRunningStatusDataReport = msg;
+                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
+                {
+                    clsRunningStatusReportResponseMessage QueryResponseMessage = mesg as clsRunningStatusReportResponseMessage;
+                    if (QueryResponseMessage != null)
+                        return (true, QueryResponseMessage.RuningStateReportAck);
+                    else
+                        return (false, null);
+                }
+                else
+                    return (false, null);
+            }
+            catch (Exception)
+            {
+                return (false, null);
+            }
+        }
 
         private async Task<(bool, SimpleRequestResponseWithTimeStamp runningStateReportAck)> TryRnningStateReportAsync()
         {
@@ -358,7 +406,6 @@ namespace AGVSystemCommonNet6.AGVDispatch
                 lastRunningStatusDataReport = msg;
                 if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
                 {
-
                     clsRunningStatusReportResponseMessage QueryResponseMessage = mesg as clsRunningStatusReportResponseMessage;
                     if (QueryResponseMessage != null)
                         return (true, QueryResponseMessage.RuningStateReportAck);

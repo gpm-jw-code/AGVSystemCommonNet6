@@ -100,9 +100,6 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
             {
                 DBhelper.InsertAlarm(alarm_save);
             }
-
-            //if (buzzer_alarm)
-            //    Buzzer.BuzzerPlayer.BuzzerAlarm();
         }
 
     }
