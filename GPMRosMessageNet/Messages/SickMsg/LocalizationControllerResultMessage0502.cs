@@ -41,7 +41,7 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Messages.SickMsg
             this.x = 0;
             this.y = 0;
             this.heading = 0;
-            this.loc_status = 0;
+            this.loc_status = 40;
             this.map_match_status = 0;
             this.sync_timestamp_sec = 0;
             this.sync_timestamp_nsec = 0;
