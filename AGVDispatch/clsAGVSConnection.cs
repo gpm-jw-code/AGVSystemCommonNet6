@@ -10,7 +10,7 @@ using System.Text;
 
 namespace AGVSystemCommonNet6.AGVDispatch
 {
-    public class clsAGVSConnection : Connection
+    public partial class clsAGVSConnection : Connection
     {
         TcpClient tcpClient;
         clsSocketState socketState = new clsSocketState();
@@ -39,6 +39,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
             ACK_0304 = 0304,
             REQ_0305 = 0305,
             ACK_0306 = 0306,
+            ACK_0322 = 0322,
             UNKNOWN = 9999,
         }
 
@@ -194,75 +195,6 @@ namespace AGVSystemCommonNet6.AGVDispatch
             throw new NotImplementedException();
         }
 
-        private void HandleAGVSJsonMsg(string _json)
-        {
-            MessageBase? MSG = null;
-            MESSAGE_TYPE msgType = GetMESSAGE_TYPE(_json);
-
-            try
-            {
-                if (msgType == MESSAGE_TYPE.ACK_0102)
-                {
-                    clsOnlineModeQueryResponseMessage? onlineModeQuAck = JsonConvert.DeserializeObject<clsOnlineModeQueryResponseMessage>(_json);
-                    CurrentREMOTE_MODE_Downloaded = onlineModeQuAck.OnlineModeQueryResponse.RemoteMode;
-                    OnRemoteModeChanged(CurrentREMOTE_MODE_Downloaded);
-                    MSG = onlineModeQuAck;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                }
-                else if (msgType == MESSAGE_TYPE.ACK_0104)  //AGV上線請求的回覆
-                {
-                    clsOnlineModeRequestResponseMessage? onlineModeRequestResponse = JsonConvert.DeserializeObject<clsOnlineModeRequestResponseMessage>(_json);
-                    AGVOnlineReturnCode = onlineModeRequestResponse.ReturnCode;
-                    WaitAGVSAcceptOnline.Set();
-                    MSG = onlineModeRequestResponse;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                }
-                else if (msgType == MESSAGE_TYPE.ACK_0106)  //Running State Report的回覆
-                {
-                    clsRunningStatusReportResponseMessage? runningStateReportAck = JsonConvert.DeserializeObject<clsRunningStatusReportResponseMessage>(_json);
-                    MSG = runningStateReportAck;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                }
-                else if (msgType == MESSAGE_TYPE.REQ_0301)  //TASK DOWNLOAD
-                {
-                    clsTaskDownloadMessage? taskDownloadReq = JsonConvert.DeserializeObject<clsTaskDownloadMessage>(_json);
-                    MSG = taskDownloadReq;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                    taskDownloadReq.TaskDownload.OriTaskDataJson = _json;
-                    bool accept_task = OnTaskDownload(taskDownloadReq.TaskDownload);
-                    if (TryTaskDownloadReqAckAsync(accept_task, taskDownloadReq.SystemBytes))
-                    {
-                        OnTaskDownloadFeekbackDone?.Invoke(this, taskDownloadReq.TaskDownload);
-                    }
-                }
-                else if (msgType == MESSAGE_TYPE.ACK_0304)  //TASK Feedback的回傳
-                {
-                    clsSimpleReturnMessage? taskFeedbackAck = JsonConvert.DeserializeObject<clsSimpleReturnMessage>(_json);
-                    MSG = taskFeedbackAck;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                }
-                else if (msgType == MESSAGE_TYPE.REQ_0305)
-                {
-                    clsTaskResetReqMessage? taskResetMsg = JsonConvert.DeserializeObject<clsTaskResetReqMessage>(_json);
-                    MSG = taskResetMsg;
-                    AGVSMessageStoreDictionary.TryAdd(MSG.SystemBytes, MSG);
-                    bool reset_accept = OnTaskResetReq(taskResetMsg.ResetData.ResetMode);
-                    TryTaskResetReqAckAsync(reset_accept, taskResetMsg.SystemBytes);
-                }
-                MSG.OriJsonString = _json;
-
-
-                if (WaitAGVSReplyMREDictionary.TryRemove(MSG.SystemBytes, out ManualResetEvent mse))
-                {
-                    mse.Set();
-                }
-            }
-            catch (Exception ex)
-            {
-                LOG.ERROR("HandleAGVSJsonMsg_Code Error", ex);
-            }
-        }
-
         public MESSAGE_TYPE GetMESSAGE_TYPE(string message_json)
         {
 
@@ -301,6 +233,8 @@ namespace AGVSystemCommonNet6.AGVDispatch
 
             if (firstHeaderKey.Contains("0306"))
                 return MESSAGE_TYPE.ACK_0306;
+            if (firstHeaderKey.Contains("0322"))
+                return MESSAGE_TYPE.ACK_0322;
             else
                 return MESSAGE_TYPE.UNKNOWN;
         }
@@ -315,163 +249,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
         }
 
 
-        private bool TryTaskDownloadReqAckAsync(bool accept_task, int system_byte)
-        {
-            if (AGVSMessageStoreDictionary.TryRemove(system_byte, out MessageBase _retMsg))
-            {
-                byte[] data = AGVSMessageFactory.CreateTaskDownloadReqAckData(accept_task, system_byte, out clsSimpleReturnMessage ackMsg);
-                LOG.INFO($"TaskDownload Ack : {ackMsg.ToJson()}");
-                return WriteDataOut(data);
-            }
-            else
-                return false;
-        }
 
-        public async Task TryTaskFeedBackAsync(clsTaskDownloadData taskData, int point_index, TASK_RUN_STATUS task_status)
-        {
-            _ = Task.Run(async () =>
-          {
-              PauseRunningStatusReport();
-              await Task.Delay(100);
-
-              if (task_status == TASK_RUN_STATUS.ACTION_FINISH)
-              {
-                  await TryRnningStateReportWithActionFinishAtLastPtAsync();
-              }
-              else
-              {
-                  await TryRnningStateReportAsync();
-              }
-
-              LOG.WARN($"Try Task Feedback to AGVS: Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}");
-              byte[] data = AGVSMessageFactory.CreateTaskFeedbackMessageData(taskData, point_index, task_status, out clsTaskFeedbackMessage msg);
-
-              //var lastState = lastRunningStatusDataReport.Header["0105"];
-              //LOG.INFO($"Before TaskFeedBack :Status: = {lastState.ToJson()}");
-              bool success = await WriteDataOut(data, msg.SystemBytes);
-              ResumeRunningStatusReport();
-
-              if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase _retMsg))
-              {
-                  try
-                  {
-                      clsSimpleReturnMessage msg_return = (clsSimpleReturnMessage)_retMsg;
-                      LOG.INFO($" Task Feedback to AGVS RESULT(Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}) ===> {msg_return.ReturnData.ReturnCode}");
-
-                  }
-                  catch (Exception ex)
-                  {
-
-                  }
-
-              }
-              else
-              {
-
-              }
-          });
-
-        }
-
-        private async Task<(bool, SimpleRequestResponseWithTimeStamp runningStateReportAck)> TryRnningStateReportWithActionFinishAtLastPtAsync()
-        {
-            try
-            {
-                byte[] data = AGVSMessageFactory.CreateRunningStateReportQueryData(out clsRunningStatusReportMessage msg, true);
-                await WriteDataOut(data, msg.SystemBytes);
-                lastRunningStatusDataReport = msg;
-                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
-                {
-                    clsRunningStatusReportResponseMessage QueryResponseMessage = mesg as clsRunningStatusReportResponseMessage;
-                    if (QueryResponseMessage != null)
-                        return (true, QueryResponseMessage.RuningStateReportAck);
-                    else
-                        return (false, null);
-                }
-                else
-                    return (false, null);
-            }
-            catch (Exception)
-            {
-                return (false, null);
-            }
-        }
-
-        private async Task<(bool, SimpleRequestResponseWithTimeStamp runningStateReportAck)> TryRnningStateReportAsync()
-        {
-            try
-            {
-                byte[] data = AGVSMessageFactory.CreateRunningStateReportQueryData(out clsRunningStatusReportMessage msg);
-                await WriteDataOut(data, msg.SystemBytes);
-                lastRunningStatusDataReport = msg;
-                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
-                {
-                    clsRunningStatusReportResponseMessage QueryResponseMessage = mesg as clsRunningStatusReportResponseMessage;
-                    if (QueryResponseMessage != null)
-                        return (true, QueryResponseMessage.RuningStateReportAck);
-                    else
-                        return (false, null);
-                }
-                else
-                    return (false, null);
-            }
-            catch (Exception)
-            {
-                return (false, null);
-            }
-        }
-
-        private void TryTaskResetReqAckAsync(bool reset_accept, int system_byte)
-        {
-            byte[] data = AGVSMessageFactory.CreateSimpleReturnMessageData("0306", reset_accept, system_byte, out clsSimpleReturnWithTimestampMessage msg);
-            Console.WriteLine(msg.ToJson());
-            bool writeOutSuccess = WriteDataOut(data);
-            Console.WriteLine("TryTaskResetReqAckAsync : " + writeOutSuccess);
-
-        }
-        public async Task<(bool success, RETURN_CODE return_code)> TrySendOnlineModeChangeRequest(int currentTag, REMOTE_MODE mode)
-        {
-            Console.WriteLine($"[Online Mode Change] 車載請求 {mode} , Tag {currentTag}");
-            try
-            {
-                WaitAGVSAcceptOnline = new ManualResetEvent(false);
-                byte[] data = AGVSMessageFactory.CreateOnlineModeChangeRequesData(currentTag, mode, out clsOnlineModeRequestMessage msg);
-                await WriteDataOut(data, msg.SystemBytes);
-                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
-                {
-                }
-                WaitAGVSAcceptOnline.WaitOne(1000);
-                bool success = AGVOnlineReturnCode == RETURN_CODE.OK;
-                return (success, AGVOnlineReturnCode);
-            }
-            catch (Exception ex)
-            {
-                LOG.WARN($"[AGVS] OnlineModeChangeRequest Fail...Code Error:{ex.Message}");
-                return (false, RETURN_CODE.System_Error);
-            }
-        }
-
-
-        public async Task<(bool, OnlineModeQueryResponse onlineModeQuAck)> TryOnlineModeQueryAsync()
-        {
-            try
-            {
-                byte[] data = AGVSMessageFactory.CreateOnlineModeQueryData(out clsOnlineModeQueryMessage msg);
-                await WriteDataOut(data, msg.SystemBytes);
-
-                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase mesg))
-                {
-                    clsOnlineModeQueryResponseMessage QueryResponseMessage = mesg as clsOnlineModeQueryResponseMessage;
-                    return (true, QueryResponseMessage.OnlineModeQueryResponse);
-                }
-                else
-                    return (false, null);
-            }
-            catch (Exception)
-            {
-                return (false, null);
-            }
-        }
         public bool WriteDataOut(byte[] dataByte)
         {
             if (!IsConnected())
@@ -538,5 +316,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
                 return false;
             }
         }
+
+
     }
 }

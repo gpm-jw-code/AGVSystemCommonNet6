@@ -39,7 +39,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     {
                         {headerKey, new SimpleRequestResponseWithTimeStamp()
                         {
-                             ReturnCode = (int)(confirmed? RETURN_CODE.OK: RETURN_CODE.NG),
+                             ReturnCode = confirmed? RETURN_CODE.OK: RETURN_CODE.NG,
                               TimeStamp = DateTime.Now.ToAGVSTimeFormat()
                         }
                         }
@@ -59,7 +59,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     {
                         {"0302", new SimpleRequestResponse()
                         {
-                             ReturnCode = (int)(accept_task? RETURN_CODE.OK: RETURN_CODE.NG),
+                             ReturnCode = accept_task? RETURN_CODE.OK: RETURN_CODE.NG,
                         }
                         }
                     }
@@ -157,6 +157,30 @@ namespace AGVSystemCommonNet6.AGVDispatch
                    }
             };
             return Encoding.ASCII.GetBytes(FormatSendOutString(taskFeedbackMessage.ToJson()));
+
+        }
+
+        internal static byte[] CreateCarrierRemovedData(string[] cstids, string task_name, string opid, out clsCarrierRemovedMessage carrierRemovedMessage)
+        {
+            carrierRemovedMessage = new clsCarrierRemovedMessage()
+            {
+                SID = SID,
+                EQName = EQName,
+                SystemBytes = System_Byte_Cyclic,
+                Header = new Dictionary<string, CarrierRemovedData>()
+                 {
+                     {
+                         "0321", new CarrierRemovedData
+                         {
+                              TimeStamp=DateTime.Now,
+                              OPID = opid,
+                              TaskName = task_name,
+                              CSTID = cstids
+                         }
+                     }
+                 }
+            };
+            return Encoding.ASCII.GetBytes(FormatSendOutString(carrierRemovedMessage.ToJson()));
 
         }
     }

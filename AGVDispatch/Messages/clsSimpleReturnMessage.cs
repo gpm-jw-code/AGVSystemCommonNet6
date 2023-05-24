@@ -25,7 +25,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
     public class SimpleRequestResponse
     {
         [JsonProperty("Return Code")]
-        public int ReturnCode { get; set; }
+        public RETURN_CODE ReturnCode { get; set; }
 
     }
 }
