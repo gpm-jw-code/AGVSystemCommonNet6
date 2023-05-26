@@ -9,6 +9,7 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Services
         /// 空字串時會停止音樂
         /// </summary>
         public string file_path { get; set; }
+        public float total_sec { get; set; }
 
         public PlayMusicRequest()
         {
