@@ -49,34 +49,42 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         public bool AGV_Reset_Flag { get; set; } = true;
         [JsonProperty("Signal Strength")]
         public double Signal_Strength { get; set; } = 0;
-        
+
         [JsonProperty("Cargo Status")]
         public int Cargo_Status { get; set; } = 0;
 
         public string[] CSTID { get; set; } = new string[0];
         public double Odometry { get; set; } = 0;
-       
+
 
         [JsonProperty("Electric Volume")]
         public double[] Electric_Volume { get; set; } = new double[2] { 0, 0 };
-        
+
         [JsonProperty("Alarm Code")]
         public clsAlarmCode[] Alarm_Code { get; set; } = new clsAlarmCode[0];
         [JsonProperty("Fork Height")]
-        public double Fork_Height { get; set; } 
+        public double Fork_Height { get; set; }
 
         public class clsCorrdination
         {
             public double X { get; set; }
-            public double Y { get; set; } 
+            public double Y { get; set; }
             public double Theta { get; set; }
         }
         public class clsAlarmCode
         {
             [JsonProperty("Alarm ID")]
             public int Alarm_ID { get; set; }
+
+            /// <summary>
+            ///  1: Serious, 0: Light
+            /// </summary>
             [JsonProperty("Alarm Level")]
             public int Alarm_Level { get; set; }
+
+            /// <summary>
+            /// 0: Task Recoverable, other: Unrecoverable
+            /// </summary>
             [JsonProperty("Alarm Category")]
             public int Alarm_Category { get; set; }
             [JsonProperty("Alarm Description")]

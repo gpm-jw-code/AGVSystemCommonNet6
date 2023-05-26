@@ -7,7 +7,7 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
     {
         public enum LEVEL
         {
-            Alarm, Warning
+            Warning, Alarm
         }
 
         [PrimaryKey]
