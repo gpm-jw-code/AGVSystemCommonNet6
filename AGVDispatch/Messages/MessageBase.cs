@@ -28,7 +28,8 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         NAVIGATING,
         REACH_POINT_OF_TRAJECTORY,
         ACTION_START,
-        ACTION_FINISH
+        ACTION_FINISH,
+        WAIT
     }
 
     public enum ACTION_TYPE
