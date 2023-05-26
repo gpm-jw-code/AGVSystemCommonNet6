@@ -176,5 +176,27 @@ namespace AGVSystemCommonNet6
         {
             return map_station.CalculateDistance(from_station.X, from_station.Y);
         }
+
+
+        /// <summary>
+        /// 將整數轉成2進位,每個bit用boolean表示0/1 (0:false, 1:ture)
+        /// </summary>
+        /// <param name="int_val"></param>
+        /// <returns></returns>
+        public static bool[] To4Booleans(this int int_val)
+        {
+            bool[] bool_ary = new bool[4];
+            for (int i = 0; i < 4; i++)
+            {
+                bool_ary[i] = ((int_val >> i) & 1) != 1;
+            }
+            return bool_ary;
+        }
+
+        public static int ToInt(this bool[] bool_ary)
+        {
+            return BitConverter.ToInt16(bool_ary.Select(b => b ? (byte)0x1 : (byte)0x00).Reverse().ToArray(), 0);
+
+        }
     }
 }
