@@ -62,6 +62,14 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
             }
         }
 
+        public bool IsNeedHandshake
+        {
+            get
+            {
+                return Station_Type == STATION_TYPE.EQ | Station_Type == STATION_TYPE.STK | Station_Type == STATION_TYPE.Charge_STK;
+            }
+        }
+
         /// <summary>
         /// 把派車任務DTO轉成送給車控CommandActionClient的 TaskCommandGoal
         /// </summary>
@@ -160,7 +168,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
     }
     public class clsTaskDownloadAckData
     {
-       
+
         [JsonProperty("Return Code")]
         public int ReturnCode { get; set; }
     }
