@@ -5,6 +5,9 @@ namespace AGVSystemCommonNet6.GPMRosMessageNet.Services
     {
         public const string RosMessageName = "sound_play_adapter/PlayMusic";
 
+        /// <summary>
+        /// 空字串時會停止音樂
+        /// </summary>
         public string file_path { get; set; }
 
         public PlayMusicRequest()
