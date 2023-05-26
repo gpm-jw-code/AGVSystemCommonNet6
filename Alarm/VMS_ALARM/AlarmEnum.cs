@@ -190,6 +190,7 @@
         Motion_control_Wrong_Position_To_Tracking_Tag = 2210,
         Motion_control_Tracking_Tag_Fail = 2220,
         F0GPM_Motion_control_RunMove_Abort = 2400,
+        Can_not_Pass_Task_to_Motion_Control=2401,
         F1Action_Server_Not_Ready0F1Action = 2410,
         FATask_Path_Road_Closed = 2500,
         AGV_Alive_Check_Fail = 3000,
