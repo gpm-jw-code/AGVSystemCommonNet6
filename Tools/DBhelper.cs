@@ -11,12 +11,11 @@ namespace AGVSystemCommonNet6.Tools.Database
     {
         private static SQLiteConnection db;
 
-        public static void Initialize()
+        public static void Initialize(string dbName = "VMS")
         {
             try
             {
-
-                var databasePath = Path.Combine(Environment.CurrentDirectory, "VMS.db");
+                var databasePath = Path.Combine(Environment.CurrentDirectory, $"{dbName}.db");
                 db = new SQLiteConnection(databasePath);
                 db.CreateTable<clsAlarmCode>();
                 db.CreateTable<UserEntity>();
