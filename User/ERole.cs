@@ -6,5 +6,6 @@
         Engineer,
         Developer,
         GOD,
+        VISITOR,
     }
 }

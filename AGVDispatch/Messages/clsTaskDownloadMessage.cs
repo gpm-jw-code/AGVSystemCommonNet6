@@ -48,7 +48,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
 
         public clsMapPoint[] ExecutingTrajecory => Trajectory.Length != 0 ? Trajectory : Homing_Trajectory;
         public List<int> TagsOfTrajectory => ExecutingTrajecory.Select(pt => pt.Point_ID).ToList();
-        public string OriTaskDataJson;
+        public string OriTaskDataJson = "";
         public bool IsAfterLoadingAction = false;
 
         /// <summary>

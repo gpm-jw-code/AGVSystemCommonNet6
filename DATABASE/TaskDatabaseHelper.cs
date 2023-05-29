@@ -1,4 +1,5 @@
-﻿using AGVSystemCommonNet6.TASK;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using AGVSystemCommonNet6.TASK;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace AGVSystemCommonNet6.DATABASE
         public List<clsTaskDto> GetALL()
         {
             var alltasks = dbhelper._context.Tasks.ToList();
-            var finishone = alltasks.First(tsk => tsk.State == TASK_RUN_STATE.FINISH);
+            var finishone = alltasks.First(tsk => tsk.State == TASK_RUN_STATUS.ACTION_FINISH);
             return alltasks;
         }
 
@@ -31,7 +32,7 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATE.WAIT| tsk.State == TASK_RUN_STATE.RUNNING).OrderByDescending(t => t.RecieveTime).ToList();
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.WAIT| tsk.State == TASK_RUN_STATUS.NAVIGATING).OrderByDescending(t => t.RecieveTime).ToList();
                 if(incompleteds.Count > 0)
                 {
 
@@ -45,7 +46,7 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATE.FINISH| tsk.State == TASK_RUN_STATE.FAILURE).OrderByDescending(t => t.RecieveTime).ToList();
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.NAVIGATING| tsk.State == TASK_RUN_STATUS.FAILURE).OrderByDescending(t => t.RecieveTime).ToList();
                 return incompleteds;
             }
         }
@@ -73,14 +74,14 @@ namespace AGVSystemCommonNet6.DATABASE
             }
         }
 
-        public bool ModifyState(clsTaskDto executingTask, TASK_RUN_STATE state)
+        public bool ModifyState(clsTaskDto executingTask, TASK_RUN_STATUS state)
         {
             try
             {
                 clsTaskDto? taskExist = dbhelper._context.Set<clsTaskDto>().FirstOrDefault(tsk => tsk.TaskName == executingTask.TaskName);
                 if (taskExist != null)
                 {
-                    if (state == TASK_RUN_STATE.FAILURE | state == TASK_RUN_STATE.FINISH)
+                    if (state == TASK_RUN_STATUS.FAILURE | state == TASK_RUN_STATUS.ACTION_FINISH)
                         taskExist.FinishTime = DateTime.Now;
                     taskExist.State = state;
                     int ret = dbhelper._context.SaveChanges();

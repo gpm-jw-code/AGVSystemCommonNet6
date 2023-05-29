@@ -1,4 +1,5 @@
 ﻿using AGVSystemCommonNet6;
+using AGVSystemCommonNet6.AGVDispatch.Messages;
 using AGVSystemCommonNet6.TASK;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,8 @@ namespace AGVSystemCommonNet6
         public bool Connected { get; set; }
         public string TaskName { get; set; } = "";
 
-        public TASK_RUN_STATE TaskRunStatus { get; set; }
-        public ACTIONS TaskRunAction { get; set; }
+        public TASK_RUN_STATUS TaskRunStatus { get; set; }
+        public ACTION_TYPE TaskRunAction { get; set; }
 
         public double Theta { get; set; }
     }

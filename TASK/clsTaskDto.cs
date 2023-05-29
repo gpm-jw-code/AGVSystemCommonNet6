@@ -1,4 +1,5 @@
-﻿using AGVSystemCommonNet6.AGVMessage;
+﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
+using AGVSystemCommonNet6.AGVMessage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,44 +8,30 @@ using System.Text;
 
 namespace AGVSystemCommonNet6.TASK
 {
-    public enum ACTIONS
-    {
-        MOVE,
-        LOAD,
-        UNLOAD,
-        CHARGE,
-        CARRY
-    }
-    public enum TASK_RUN_STATE
-    {
-        WAIT,
-        RUNNING,
-        FINISH,
-        FAILURE
-    }
+
     public class clsTaskDto
     {
         public DateTime RecieveTime { get; set; }
         public DateTime FinishTime { get; set; }
-       
+
         [Key]
         public string TaskName { get; set; } = string.Empty;
 
         [Required]
-        public TASK_RUN_STATE State { get; set; }
+        public TASK_RUN_STATUS State { get; set; }
         public string StateName
         {
             get
             {
                 switch (this.State)
                 {
-                    case TASK_RUN_STATE.WAIT:
+                    case TASK_RUN_STATUS.WAIT:
                         return "等待";
-                    case TASK_RUN_STATE.RUNNING:
+                    case TASK_RUN_STATUS.NAVIGATING:
                         return "執行中";
-                    case TASK_RUN_STATE.FINISH:
+                    case TASK_RUN_STATUS.ACTION_FINISH:
                         return "完成";
-                    case TASK_RUN_STATE.FAILURE:
+                    case TASK_RUN_STATUS.FAILURE:
                         return "失敗";
                     default:
                         return "等待";
@@ -66,25 +53,25 @@ namespace AGVSystemCommonNet6.TASK
         public string FailureReason { get; set; } = string.Empty;
 
         public string DesignatedAGVName { get; set; } = "";
-     
+
 
         [Required]
-        public ACTIONS Action { get; set; }
+        public ACTION_TYPE Action { get; set; }
         public string ActionName
         {
             get
             {
                 switch (this.Action)
                 {
-                    case ACTIONS.MOVE:
+                    case ACTION_TYPE.None:
                         return "移動";
-                    case ACTIONS.LOAD:
+                    case ACTION_TYPE.Load:
                         return "放貨";
-                    case ACTIONS.UNLOAD:
+                    case ACTION_TYPE.Unload:
                         return "取貨";
-                    case ACTIONS.CHARGE:
+                    case ACTION_TYPE.Charge:
                         return "充電";
-                    case ACTIONS.CARRY:
+                    case ACTION_TYPE.Carry:
                         return "搬運";
                     default:
                         return "未知";
