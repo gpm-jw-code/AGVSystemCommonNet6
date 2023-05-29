@@ -24,7 +24,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         /// 
         /// </summary>
         [JsonProperty("AGV Status")]
-        public MAIN_STATUS AGV_Status { get; set; } = MAIN_STATUS.DOWN;
+        public MAIN_STATUS AGV_Status { get; set; } 
         [JsonProperty("Escape Flag")]
         public bool Escape_Flag { get; set; } = false;
         [JsonProperty("Sensor Status")]

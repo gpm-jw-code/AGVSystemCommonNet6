@@ -25,6 +25,6 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         public int PointIndex { get; set; }
 
         [JsonProperty("Task Status")]
-        public int TaskStatus { get; set; }
+        public TASK_RUN_STATUS TaskStatus { get; set; }
     }
 }

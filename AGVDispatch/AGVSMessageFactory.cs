@@ -150,7 +150,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
                              TaskSimplex = taskData.Task_Simplex,
                               TaskSequence = taskData.Task_Sequence,
                                PointIndex = PointIndex,
-                                TaskStatus = (int)task_status,
+                                TaskStatus = task_status,
                                  TimeStamp = DateTime.Now.ToAGVSTimeFormat()
                         }
                     }

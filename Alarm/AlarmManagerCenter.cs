@@ -144,8 +144,12 @@ namespace AGVSystemCommonNet6.Alarm
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                return new clsAlarmCode
+                {
+                    AlarmCode = alarm_enum,
+                    Description_En = alarm_enum.ToString(),
+                    Description_Zh = alarm_enum.ToString()
+                };
             }
         }
 

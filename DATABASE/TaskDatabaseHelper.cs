@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace AGVSystemCommonNet6.DATABASE
 {
-    public class TaskDatabaseHelper:IDisposable
+    public class TaskDatabaseHelper : IDisposable
     {
         protected readonly string connection_str;
-        protected  DbContextHelper dbhelper;
+        protected DbContextHelper dbhelper;
         private bool disposedValue;
         public TaskDatabaseHelper()
         {
@@ -32,11 +32,9 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.WAIT| tsk.State == TASK_RUN_STATUS.NAVIGATING).OrderByDescending(t => t.RecieveTime).ToList();
-                if(incompleteds.Count > 0)
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.WAIT | tsk.State == TASK_RUN_STATUS.NAVIGATING).OrderByDescending(t => t.RecieveTime).ToList();
+                if (incompleteds.Count > 0)
                 {
-
-
                 }
                 return incompleteds;
             }
@@ -46,7 +44,7 @@ namespace AGVSystemCommonNet6.DATABASE
         {
             using (var dbhelper = new DbContextHelper(connection_str))
             {
-                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.NAVIGATING| tsk.State == TASK_RUN_STATUS.FAILURE).OrderByDescending(t => t.RecieveTime).ToList();
+                var incompleteds = dbhelper._context.Set<clsTaskDto>().Where(tsk => tsk.State == TASK_RUN_STATUS.ACTION_FINISH | tsk.State == TASK_RUN_STATUS.FAILURE).OrderByDescending(t => t.RecieveTime).ToList();
                 return incompleteds;
             }
         }
