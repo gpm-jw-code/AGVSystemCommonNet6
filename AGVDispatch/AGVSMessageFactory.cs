@@ -11,7 +11,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
         public delegate RunningStatus GetVCSRunningDataDelegate(bool getPoseWithLastPtOfTrajectory = false);
         public static GetVCSRunningDataDelegate OnVCSRunningDataRequest;
 
-        private static int SystemByteStored = 0;
+        private static int SystemByteStored = 8790;
         private static int System_Byte_Cyclic
         {
             get

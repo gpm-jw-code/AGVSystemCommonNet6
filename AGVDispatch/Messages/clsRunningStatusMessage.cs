@@ -46,7 +46,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         public double RAM_Usage_Percent { get; set; } = 0;
 
         [JsonProperty("AGV Reset Flag")]
-        public bool AGV_Reset_Flag { get; set; } = true;
+        public bool AGV_Reset_Flag { get; set; }
         [JsonProperty("Signal Strength")]
         public double Signal_Strength { get; set; } = 0;
 

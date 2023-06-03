@@ -2,6 +2,7 @@
 using AGVSystemCommonNet6.Log;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
                 return false;
         }
 
-        public async Task TryTaskFeedBackAsync(clsTaskDownloadData taskData, int point_index, TASK_RUN_STATUS task_status)
+        public async Task TryTaskFeedBackAsync(clsTaskDownloadData taskData, int point_index, TASK_RUN_STATUS task_status,int currentTAg)
         {
             _ = Task.Run(async () =>
             {
@@ -39,11 +40,8 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     await TryRnningStateReportAsync();
                 }
 
-                LOG.WARN($"Try Task Feedback to AGVS: Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}");
+                //LOG.WARN($"Try Task Feedback to AGVS: Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}");
                 byte[] data = AGVSMessageFactory.CreateTaskFeedbackMessageData(taskData, point_index, task_status, out clsTaskFeedbackMessage msg);
-
-                //var lastState = lastRunningStatusDataReport.Header["0105"];
-                //LOG.INFO($"Before TaskFeedBack :Status: = {lastState.ToJson()}");
                 bool success = await WriteDataOut(data, msg.SystemBytes);
                 ResumeRunningStatusReport();
 
@@ -52,14 +50,11 @@ namespace AGVSystemCommonNet6.AGVDispatch
                     try
                     {
                         clsSimpleReturnMessage msg_return = (clsSimpleReturnMessage)_retMsg;
-                        LOG.INFO($" Task Feedback to AGVS RESULT(Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}) ===> {msg_return.ReturnData.ReturnCode}");
-
+                        LOG.INFO($" Task Feedback to AGVS RESULT(Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index}(Tag:{currentTAg}) | Status : {task_status.ToString()}) ===> {msg_return.ReturnData.ReturnCode}");
                     }
                     catch (Exception ex)
                     {
-
                     }
-
                 }
                 else
                 {
