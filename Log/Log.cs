@@ -102,7 +102,7 @@ namespace AGVSystemCommonNet6.Log
 
                     using (StreamWriter writer = new StreamWriter(fileName, true))
                     {
-                        writer.WriteLine(logItem.logFullLine);
+                        writer.WriteLine(string.Format("{0} {1}", logItem.Time, logItem.logFullLine));
                     }
 
 
