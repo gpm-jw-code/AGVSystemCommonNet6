@@ -8,7 +8,7 @@ namespace AGVSystemCommonNet6.MAP
 {
     public class MapManager
     {
-        public static Map LoadMapFromFile(string local_map_file_path = @"D:\param\Map_UMTC_3F_Yellow.json")
+        public static Map LoadMapFromFile(string local_map_file_path = @"D:\param\Map_UMTC_AOI.json")
         {
             var json = System.IO.File.ReadAllText(local_map_file_path);
             if (json == null)

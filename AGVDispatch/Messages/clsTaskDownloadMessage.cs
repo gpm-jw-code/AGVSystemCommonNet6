@@ -83,7 +83,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
                 {
                     (int tag, double locx, double locy, double theta) currentPos = OnCurrentPoseReq();
                     //LOG.INFO($"[RosTaskCommandGoal] Gen RosTaskCommandGoal,Current Pose=>Tag:{currentPos.tag}," +
-                        //$"X:{currentPos.locx},Y:{currentPos.locy},Theta:{currentPos.theta}");
+                    //$"X:{currentPos.locx},Y:{currentPos.locy},Theta:{currentPos.theta}");
                 }
 
                 clsMapPoint[] _ExecutingTrajecory = new clsMapPoint[0];
@@ -158,6 +158,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
             var taskData = JsonConvert.DeserializeObject<clsTaskDownloadData>(this.ToJson());
             taskData.IsAfterLoadingAction = true;
             taskData.Destination = Homing_Trajectory.First().Point_ID;
+           // taskData.Homing_Trajectory = taskData.Homing_Trajectory.Reverse().ToArray();
             return taskData;
         }
 

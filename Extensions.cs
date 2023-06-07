@@ -1,5 +1,4 @@
 ﻿using AGVSystemCommonNet6.AGVDispatch.Messages;
-using AGVSystemCommonNet6.AGVMessage;
 using AGVSystemCommonNet6.MAP;
 using Newtonsoft.Json;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
@@ -53,6 +52,7 @@ namespace AGVSystemCommonNet6
             var startTag_index = find_index(startTag);
             return points.ToList().FindAll(p => find_index(p.Point_ID) >= startTag_index).Select(pt => pt.Point_ID).ToArray();
         }
+
         public static double ToTheta(this RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion orientation)
         {
             double yaw;
@@ -77,42 +77,6 @@ namespace AGVSystemCommonNet6
                 Console.Error.WriteLine(ex.Message);
                 return "{}";
             }
-        }
-        public static MAIN_STATUS GetAGVStatus(this cls_0105_RunningStatusReportHeader data)
-        {
-            return Enum.GetValues(typeof(MAIN_STATUS)).Cast<MAIN_STATUS>().First(enu => (int)enu == data.AGV_Status);
-        }
-
-        public static ONLINE_STATE GetOnlineReqMode(this cls_0103_OnlineRequestHeader data)
-        {
-            return Enum.GetValues(typeof(ONLINE_STATE)).Cast<ONLINE_STATE>().First(enu => (int)enu == data.Mode_Request);
-
-        }
-
-        /// <summary>
-        /// 取得站點路線By Action Type
-        /// </summary>
-        /// <param name="task"></param>
-        /// <returns></returns>
-        public static clsMapPoint[] GetMainTrajectory(this cls_0301_TaskDownloadHeader task)
-        {
-            if (task.GetActionTypeEnum() == ACTION_TYPE.None)
-                return task.Trajectory;
-            else
-                return task.Homing_Trajectory;
-        }
-
-        /// <summary>
-        /// 取得站點路線By Action Type
-        /// </summary>
-        /// <param name="task"></param>
-        /// <returns></returns>
-        public static void ReplanTrajectort(this cls_0301_TaskDownloadHeader task, clsMapPoint[] newTrajectory)
-        {
-            if (task.GetActionTypeEnum() == ACTION_TYPE.None)
-                task.Trajectory = newTrajectory;
-            else
-                task.Homing_Trajectory = newTrajectory;
         }
 
 

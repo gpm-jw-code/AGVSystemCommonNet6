@@ -13,7 +13,8 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         [JsonProperty("Time Stamp")]
         public string Time_Stamp { get; set; } = DateTime.Now.ToAGVSTimeFormat();
 
-        public clsCorrdination Corrdination { get; set; } = new clsCorrdination();
+        [JsonProperty("Coordination")]
+        public clsCoordination Coordination { get; set; } = new clsCoordination();
         [JsonProperty("Last Visited Node")]
         public int Last_Visited_Node { get; set; } = 0;
         /// <summary>
@@ -65,7 +66,7 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
         [JsonProperty("Fork Height")]
         public double Fork_Height { get; set; }
 
-        public class clsCorrdination
+        public class clsCoordination
         {
             public double X { get; set; }
             public double Y { get; set; }

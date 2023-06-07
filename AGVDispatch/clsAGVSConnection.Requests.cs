@@ -24,42 +24,48 @@ namespace AGVSystemCommonNet6.AGVDispatch
                 return false;
         }
 
-        public async Task TryTaskFeedBackAsync(clsTaskDownloadData taskData, int point_index, TASK_RUN_STATUS task_status,int currentTAg)
+        public async Task TryTaskFeedBackAsync(clsTaskDownloadData taskData, int point_index, TASK_RUN_STATUS task_status, int currentTAg)
         {
             _ = Task.Run(async () =>
             {
-                PauseRunningStatusReport();
+                // PauseRunningStatusReport();
                 await Task.Delay(100);
 
-                if (task_status == TASK_RUN_STATUS.ACTION_FINISH)
-                {
-                    await TryRnningStateReportWithActionFinishAtLastPtAsync();
-                }
-                else
-                {
-                    await TryRnningStateReportAsync();
-                }
+                //if (task_status == TASK_RUN_STATUS.ACTION_FINISH)
+                //{
+                //    await TryRnningStateReportWithActionFinishAtLastPtAsync();
+                //}
+                //else
+                //{
+               // await TryRnningStateReportAsync();
+                //}
 
                 //LOG.WARN($"Try Task Feedback to AGVS: Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index} | Status : {task_status.ToString()}");
-                byte[] data = AGVSMessageFactory.CreateTaskFeedbackMessageData(taskData, point_index, task_status, out clsTaskFeedbackMessage msg);
-                bool success = await WriteDataOut(data, msg.SystemBytes);
-                ResumeRunningStatusReport();
 
-                if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase _retMsg))
+                while (true)
                 {
-                    try
+                    byte[] data = AGVSMessageFactory.CreateTaskFeedbackMessageData(taskData, point_index, task_status, out clsTaskFeedbackMessage msg);
+                    bool success = await WriteDataOut(data, msg.SystemBytes);
+                    if (AGVSMessageStoreDictionary.TryRemove(msg.SystemBytes, out MessageBase _retMsg))
                     {
-                        clsSimpleReturnMessage msg_return = (clsSimpleReturnMessage)_retMsg;
-                        LOG.INFO($" Task Feedback to AGVS RESULT(Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index}(Tag:{currentTAg}) | Status : {task_status.ToString()}) ===> {msg_return.ReturnData.ReturnCode}");
+                        try
+                        {
+                            clsSimpleReturnMessage msg_return = (clsSimpleReturnMessage)_retMsg;
+                            LOG.INFO($" Task Feedback to AGVS RESULT(Task:{taskData.Task_Name}_{taskData.Task_Simplex}| Point Index : {point_index}(Tag:{currentTAg}) | Status : {task_status.ToString()}) ===> {msg_return.ReturnData.ReturnCode}");
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                        break;
                     }
-                    catch (Exception ex)
+                    else
                     {
+                        LOG.ERROR($"TryTaskFeedBackAsync FAIL>.>>");
                     }
                 }
-                else
-                {
 
-                }
+                // ResumeRunningStatusReport();
+
             });
 
         }

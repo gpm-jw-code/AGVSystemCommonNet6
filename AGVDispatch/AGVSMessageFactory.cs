@@ -137,6 +137,7 @@ namespace AGVSystemCommonNet6.AGVDispatch
 
         internal static byte[] CreateTaskFeedbackMessageData(clsTaskDownloadData taskData, int PointIndex, TASK_RUN_STATUS task_status, out clsTaskFeedbackMessage taskFeedbackMessage)
         {
+            RunningStatus? runningData = OnVCSRunningDataRequest?.Invoke(false);
             taskFeedbackMessage = new clsTaskFeedbackMessage()
             {
                 SID = SID,
@@ -151,7 +152,9 @@ namespace AGVSystemCommonNet6.AGVDispatch
                               TaskSequence = taskData.Task_Sequence,
                                PointIndex = PointIndex,
                                 TaskStatus = task_status,
-                                 TimeStamp = DateTime.Now.ToAGVSTimeFormat()
+                                 TimeStamp = DateTime.Now.ToAGVSTimeFormat(),
+                                  Last_Visited_Node = runningData.Last_Visited_Node,
+                                   Coordination = runningData.Coordination,
                         }
                     }
                    }

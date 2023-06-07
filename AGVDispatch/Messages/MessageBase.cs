@@ -24,11 +24,11 @@ namespace AGVSystemCommonNet6.AGVDispatch.Messages
 
     public enum TASK_RUN_STATUS : int
     {
-        NO_MISSION,
-        NAVIGATING,
-        REACH_POINT_OF_TRAJECTORY,
-        ACTION_START,
-        ACTION_FINISH,
+        NO_MISSION = 0,
+        NAVIGATING = 1,
+        REACH_POINT_OF_TRAJECTORY = 2,
+        ACTION_START = 3,
+        ACTION_FINISH = 4,
         WAIT,
         FAILURE
     }
