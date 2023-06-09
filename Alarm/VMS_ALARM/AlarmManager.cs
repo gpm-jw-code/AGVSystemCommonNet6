@@ -3,6 +3,7 @@ using AGVSystemCommonNet6.Tools.Database;
 using Newtonsoft.Json;
 using SQLite;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
 {
@@ -14,6 +15,7 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
         private static SQLiteConnection db;
 
         internal static event EventHandler OnAllAlarmClear;
+        public static event EventHandler OnUnRecoverableAlarmOccur;
         public static void LoadAlarmList(string alarm_JsonFile)
         {
 
@@ -49,7 +51,7 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
             }
         }
 
-        public static void AddWarning(AlarmCodes Alarm_code, bool change_state = false)
+        public static void AddWarning(AlarmCodes Alarm_code)
         {
             clsAlarmCode warning = AlarmList.FirstOrDefault(a => a.EAlarmCode == Alarm_code);
             if (warning == null)
@@ -65,10 +67,11 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
             clsAlarmCode warning_save = warning.Clone();
             warning_save.Time = DateTime.Now;
             warning_save.ELevel = clsAlarmCode.LEVEL.Warning;
+            warning_save.IsRecoverable = true;
             var existAlar = (CurrentAlarms.FirstOrDefault(al => al.Value.EAlarmCode == Alarm_code));
             if (existAlar.Value != null)
             {
-                CurrentAlarms.TryRemove(existAlar.Key,out _);
+                CurrentAlarms.TryRemove(existAlar.Key, out _);
                 CurrentAlarms.TryAdd(warning_save.Time, warning_save);
             }
             else
@@ -80,7 +83,7 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
                 }
             }
         }
-        public static void AddAlarm(AlarmCodes Alarm_code, bool buzzer_alarm = true)
+        public static void AddAlarm(AlarmCodes Alarm_code, bool IsRecoverable)
         {
             clsAlarmCode alarm = AlarmList.FirstOrDefault(a => a.EAlarmCode == Alarm_code);
             if (alarm == null)
@@ -95,11 +98,12 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
             clsAlarmCode alarm_save = alarm.Clone();
             alarm_save.Time = DateTime.Now;
             alarm_save.ELevel = clsAlarmCode.LEVEL.Alarm;
-
+            alarm_save.IsRecoverable = IsRecoverable;
             if (CurrentAlarms.TryAdd(alarm_save.Time, alarm_save))
-            {
                 DBhelper.InsertAlarm(alarm_save);
-            }
+
+            if (!IsRecoverable)
+                OnUnRecoverableAlarmOccur?.Invoke(Alarm_code, EventArgs.Empty);
         }
 
     }

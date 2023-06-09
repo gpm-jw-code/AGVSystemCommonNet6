@@ -26,6 +26,8 @@ namespace AGVSystemCommonNet6.Alarm.VMS_ALARM
             }
         }
 
+        public bool IsRecoverable { get; internal set; } = true;
+
         public clsAlarmCode Clone()
         {
             return new clsAlarmCode
