@@ -12,60 +12,65 @@ namespace AGVSystemCommonNet6.Log
         private static Task WriteLogToFileTask;
         private static ConcurrentQueue<LogItem> logItemQueue = new ConcurrentQueue<LogItem>();
 
-        public static void TRACE(string info)
+        public static void TRACE(string info, string caller_class_name)
         {
-            var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
             Log(new LogItem(LogLevel.Trace, info), caller_class_name);
         }
         public static void INFO(string info)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
+            TRACE(info, caller_class_name);
             Log(new LogItem(LogLevel.Information, info), caller_class_name);
         }
+
         public static void WARN(string info)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
+            TRACE(info, caller_class_name);
 
             Log(new LogItem(LogLevel.Warning, info), caller_class_name);
         }
         public static void ERROR(string info, Exception ex)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
-            Log(new LogItem(LogLevel.Error, string.Format("{0}。Exception Message:{1}", info, ex.Message + "\r\n" + ex.StackTrace)) { exception = ex }, caller_class_name);
+            string msg = string.Format("{0}。Exception Message:{1}", info, ex.Message + "\r\n" + ex.StackTrace);
+            TRACE(msg, caller_class_name);
+            Log(new LogItem(LogLevel.Error, msg) { exception = ex }, caller_class_name);
         }
         public static void ERROR(string info)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
+            TRACE(info, caller_class_name);
             Log(new LogItem(LogLevel.Error, string.Format("{0}", info)), caller_class_name);
         }
 
         public static void ERROR(Exception ex)
         {
-            var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
-            Log(new LogItem(LogLevel.Error, string.Format("Message:{0}。StackTrace:{1}", ex.Message, ex.StackTrace)) { exception = ex }, caller_class_name);
+            var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; 
+            string msg = string.Format("Message:{0}。StackTrace:{1}", ex.Message, ex.StackTrace);
+            TRACE(msg, caller_class_name);
+            Log(new LogItem(LogLevel.Error, msg) { exception = ex }, caller_class_name);
         }
 
         public static void Critical(string msg, Exception ex)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-            Log(new LogItem(LogLevel.Critical, string.Format("Message:{0}。StackTrace:{1}", msg, ex.StackTrace)) { exception = ex }, caller_class_name);
+            string _msg = string.Format("{0}。Exception Message:{1}", msg, ex.Message + "\r\n" + ex.StackTrace);
+            TRACE(_msg, caller_class_name);
+            Log(new LogItem(LogLevel.Critical, _msg) { exception = ex }, caller_class_name);
         }
         public static void Critical(Exception ex)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
-            Log(new LogItem(LogLevel.Critical, string.Format("Message:{0}。StackTrace:{1}", ex.Message, ex.StackTrace)) { exception = ex }, caller_class_name);
+            string _msg = string.Format("Message:{0}。StackTrace:{1}", ex.Message, ex.StackTrace);
+            TRACE(_msg, caller_class_name);
+            Log(new LogItem(LogLevel.Critical, _msg) { exception = ex }, caller_class_name);
         }
 
         public static void Critical(string info)
         {
             var caller_class_name = new StackTrace().GetFrame(1).GetMethod().DeclaringType.Name; ;
-
+            TRACE(info, caller_class_name);
             Log(new LogItem(LogLevel.Critical, info), caller_class_name);
         }
 
@@ -134,19 +139,19 @@ namespace AGVSystemCommonNet6.Log
                             break;
                     }
 
-
-                    Console.Write(" ");
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.Write(logItem.Time + " ");
-
-                    Console.ForegroundColor = foreColor;
-                    Console.BackgroundColor = backColor;
-
-                    Console.WriteLine(logItem.logFullLine);
-                    Console.WriteLine(" ");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.BackgroundColor = ConsoleColor.Black;
+                    if (logItem.level != LogLevel.Trace)
+                    {
+                        Console.Write(" ");
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write(logItem.Time + " ");
+                        Console.ForegroundColor = foreColor;
+                        Console.BackgroundColor = backColor;
+                        Console.WriteLine(logItem.logFullLine);
+                        Console.WriteLine(" ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
 
                 }
             }

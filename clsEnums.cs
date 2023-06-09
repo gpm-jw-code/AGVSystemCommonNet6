@@ -21,7 +21,8 @@ namespace AGVSystemCommonNet6
             IDLE = 1, RUN = 2, DOWN = 3, Charging = 4,
             Initializing = 5,
             ALARM = 6,
-            WARNING = 7
+            WARNING = 7,
+            STOP
         }
         public enum AGV_MODEL
         {
